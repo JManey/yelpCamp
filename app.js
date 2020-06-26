@@ -1,7 +1,8 @@
 const express = require("express"),
   mongoose = require("mongoose"),
   app = express(),
-  PORT = 3000;
+  PORT = 3000,
+  Campground = require("./models/campground")
 
 // load the env vars
 require("dotenv").config();
@@ -14,31 +15,9 @@ app.set("view engine", "ejs");
 // this is how to get rec.body working in express
 app.use(express.urlencoded({ extended: false })); //Parse URL-encoded bodies
 
-//temp db ***********************
-// fefactor later
-// schema setup
 
-let campgroundSchema = new mongoose.Schema({
-  name: String,
-  image: String,
-  description: String,
-});
-let Campground = mongoose.model("Campground", campgroundSchema);
-//test
-// Campground.create(
-//   {
-//     name: "Red Deer Creek",
-//     image: "https://live.staticflickr.com/7570/16155826112_007ffaf4ea_b.jpg",
-//   },
-//   function (err, campground) {
-//     if (err) {
-//       console.log("oh no", err);
-//     } else {
-//       console.log("made a new campground");
-//       console.log(campground);
-//     }
-//   }
-// );
+
+
 
 //************************************* */
 
