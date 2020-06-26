@@ -2,7 +2,12 @@ const express = require("express"),
   mongoose = require("mongoose"),
   app = express(),
   PORT = 3000,
-  Campground = require("./models/campground")
+  Campground = require("./models/campground"),
+  seedDB = require("./seeds")
+
+
+//seed db
+seedDB();
 
 // load the env vars
 require("dotenv").config();
