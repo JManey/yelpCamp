@@ -24,73 +24,46 @@ let campgroundSchema = new mongoose.Schema({
 });
 let Campground = mongoose.model("Campground", campgroundSchema);
 //test
-Campground.create(
-  {
-    name: "Salmon Creek",
-    image: "https://live.staticflickr.com/4156/34533119056_51fca34dff_b.jpg",
-  },
-  function (err, campground) {
-    if (err) {
-      console.log("oh no", err);
-    } else {
-      console.log("made a new campground");
-      console.log(campground);
-    }
-  }
-);
+// Campground.create(
+//   {
+//     name: "Red Deer Creek",
+//     image: "https://live.staticflickr.com/7570/16155826112_007ffaf4ea_b.jpg",
+//   },
+//   function (err, campground) {
+//     if (err) {
+//       console.log("oh no", err);
+//     } else {
+//       console.log("made a new campground");
+//       console.log(campground);
+//     }
+//   }
+// );
 
 //************************************* */
-let campgrounds = [
-  {
-    name: "salmon creek",
-    image: "https://live.staticflickr.com/4156/34533119056_51fca34dff_b.jpg",
-  },
-  {
-    name: "red deer creek",
-    image: "https://live.staticflickr.com/7570/16155826112_007ffaf4ea_b.jpg",
-  },
-  {
-    name: "lake austin ",
-    image: "https://live.staticflickr.com/3396/3653409750_cde4150238_b.jpg",
-  },
-  {
-    name: "salmon creek",
-    image: "https://live.staticflickr.com/4156/34533119056_51fca34dff_b.jpg",
-  },
-  {
-    name: "red deer creek",
-    image: "https://live.staticflickr.com/7570/16155826112_007ffaf4ea_b.jpg",
-  },
-  {
-    name: "lake austin ",
-    image: "https://live.staticflickr.com/3396/3653409750_cde4150238_b.jpg",
-  },
-  {
-    name: "salmon creek",
-    image: "https://live.staticflickr.com/4156/34533119056_51fca34dff_b.jpg",
-  },
-  {
-    name: "red deer creek",
-    image: "https://live.staticflickr.com/7570/16155826112_007ffaf4ea_b.jpg",
-  },
-  {
-    name: "lake austin ",
-    image: "https://live.staticflickr.com/3396/3653409750_cde4150238_b.jpg",
-  },
-];
 
+//route to landing page
 app.get("/", function (req, res) {
   res.render("landing");
 });
 
+//route to display all campgrounds
 app.get("/campgrounds", function (req, res) {
-  res.render("campgrounds", { campgrounds: campgrounds });
+  // get campgrounds
+  Campground.find({}, function (err, campgrounds) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("campgrounds", { campgrounds: campgrounds });
+    }
+  });
 });
 
+//route to add campground form
 app.get("/campgrounds/new", function (req, res) {
   res.render("new");
 });
 
+//route to save new campground
 app.post("/campgrounds", function (req, res) {
   //get data from from and push to array
   // console.log(req.body)
@@ -101,9 +74,14 @@ app.post("/campgrounds", function (req, res) {
     name: name,
     image: image,
   };
-  // add newCampground to array
-  campgrounds.push(newCampground);
-  res.redirect("campgrounds");
+  // add newCampground to db
+  Campground.create(newCampground, function (err, newCampground) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.redirect("campgrounds");
+    }
+  });
 });
 
 app.listen(PORT, function () {
