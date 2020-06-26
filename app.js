@@ -10,7 +10,7 @@ const express = require("express"),
 require("dotenv").config();
 // connect to the MongoDB with mongoose
 require("./config/database");
-
+app.use(express.static(__dirname + "/public"))
 app.set("view engine", "ejs");
 
 //middleware
