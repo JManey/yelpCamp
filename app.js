@@ -3,8 +3,7 @@ const express = require("express"),
   app = express(),
   PORT = 3000,
   Campground = require("./models/campground"),
-  seedDB = require("./seeds")
-
+  seedDB = require("./seeds");
 
 //seed db
 seedDB();
@@ -19,10 +18,6 @@ app.set("view engine", "ejs");
 //middleware
 // this is how to get rec.body working in express
 app.use(express.urlencoded({ extended: false })); //Parse URL-encoded bodies
-
-
-
-
 
 //************************************* */
 
@@ -61,25 +56,28 @@ app.post("/campgrounds", function (req, res) {
     image: image,
     description: description,
   };
-  Campground.create(newCampground, function(err, campground){
-    if(err){
-      console.log(err)
+  Campground.create(newCampground, function (err, campground) {
+    if (err) {
+      console.log(err);
     } else {
-      res.redirect("/campgrounds")
+      res.redirect("/campgrounds");
     }
-  })
+  });
 });
 
 // show route for campground
 app.get("/campgrounds/:id", function (req, res) {
   //get campground
-  Campground.findById(req.params.id, function (err, campground) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("show",{campground: campground});
-    }
-  });
+  Campground.findById(req.params.id)
+    .populate("comments")
+    .exec(function (err, campground) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(campground)
+        res.render("show", { campground: campground });
+      }
+    });
 });
 
 app.listen(PORT, function () {
