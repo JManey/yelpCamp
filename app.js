@@ -21,6 +21,7 @@ app.use(express.urlencoded({ extended: false })); //Parse URL-encoded bodies
 let campgroundSchema = new mongoose.Schema({
   name: String,
   image: String,
+  description: String,
 });
 let Campground = mongoose.model("Campground", campgroundSchema);
 //test
@@ -53,7 +54,7 @@ app.get("/campgrounds", function (req, res) {
     if (err) {
       console.log(err);
     } else {
-      res.render("campgrounds", { campgrounds: campgrounds });
+      res.render("index", { campgrounds: campgrounds });
     }
   });
 });
@@ -70,16 +71,29 @@ app.post("/campgrounds", function (req, res) {
   // console.log(req.body.image)
   let name = req.body.name;
   let image = req.body.image;
+  let description = req.body.description;
   let newCampground = {
     name: name,
     image: image,
+    description: description,
   };
-  // add newCampground to db
-  Campground.create(newCampground, function (err, newCampground) {
+  Campground.create(newCampground, function(err, campground){
+    if(err){
+      console.log(err)
+    } else {
+      res.redirect("/campgrounds")
+    }
+  })
+});
+
+// show route for campground
+app.get("/campgrounds/:id", function (req, res) {
+  //get campground
+  Campground.findById(req.params.id, function (err, campground) {
     if (err) {
       console.log(err);
     } else {
-      res.redirect("campgrounds");
+      res.render("show",{campground: campground});
     }
   });
 });
