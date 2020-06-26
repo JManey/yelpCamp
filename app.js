@@ -1,6 +1,10 @@
 const express = require("express");
+const  Mongoose  = require("mongoose");
 const app = express();
 const PORT = 3000;
+
+// load the env vars
+require('dotenv').config();
 
 app.set("view engine", "ejs");
 
@@ -49,6 +53,14 @@ let campgrounds = [
 ];
 
 // ********************************
+// ***************************
+//mongodb
+// connect to the MongoDB with mongoose
+require('./config/database');
+
+
+
+//********************************* */
 
 app.get("/", function (req, res) {
   res.render("landing");
