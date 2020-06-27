@@ -59,7 +59,7 @@ router.get("/:id", function (req, res) {
       if (err) {
         console.log("error from show route campground", err);
       } else {
-        // console.log(campground);
+        console.log(campground);
         res.render("campgrounds/show", { campground: campground });
       }
     });
