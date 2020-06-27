@@ -66,14 +66,14 @@ router.get("/:id", function (req, res) {
 });
 
 // edit form route
-router.get("/:id/edit", checkCampGroundOwnershop, function (req, res) {
+router.get("/:id/edit", checkCampGroundOwnership, function (req, res) {
   Campground.findById(req.params.id, function (err, campground) {
     res.render("campgrounds/edit", { campground: campground });
   });
 });
 
 // update route
-router.put("/:id", checkCampGroundOwnershop, function (req, res) {
+router.put("/:id", checkCampGroundOwnership, function (req, res) {
   Campground.findByIdAndUpdate(req.params.id, req.body.campground, function (
     err,
     campground
@@ -87,7 +87,7 @@ router.put("/:id", checkCampGroundOwnershop, function (req, res) {
 });
 
 //delete DESTROY route
-router.delete("/:id", checkCampGroundOwnershop, async function (req, res) {
+router.delete("/:id", checkCampGroundOwnership, async function (req, res) {
   try {
     let campground = await Campground.findById(req.params.id);
     await campground.remove();
@@ -108,7 +108,7 @@ function isLoggedIn(req, res, next) {
 }
 
 // check if user is campground author
-function checkCampGroundOwnershop(req, res, next) {
+function checkCampGroundOwnership(req, res, next) {
   //is a user logged in
   if (req.isAuthenticated()) {
     Campground.findById(req.params.id, function (err, campground) {
