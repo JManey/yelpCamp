@@ -3,7 +3,6 @@ const router = express.Router({ mergeParams: true }); //brings in req.params
 const Campground = require("../models/campground");
 const Comment = require("../models/comment");
 
-
 //**** new comment form ********** */
 router.get("/new", isLoggedIn, function (req, res) {
   console.log(req.params.id);
@@ -38,13 +37,24 @@ router.post("/", isLoggedIn, function (req, res) {
           //connect comment to campgroud
           campground.comments.push(comment);
           campground.save();
-          console.log("in create new comment route", comment)
+          console.log("in create new comment route", comment);
           res.redirect("/campgrounds/" + campground._id);
         }
       });
     }
   });
   //redirect
+});
+
+// ===== edit route =====
+router.get("/:comment_id/edit", function (req, res) {
+  Comment.findById(req.params.comment_id, function (err, comment) {
+    if (err) {
+      res.redirect("back");
+    } else {
+      res.render("comments/edit", { campground_id: req.params._id, comment: comment });
+    }
+  });
 });
 
 // middleware function
