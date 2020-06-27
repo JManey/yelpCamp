@@ -105,7 +105,7 @@ app.get("/campgrounds/:id", function (req, res) {
 // comment routes
 //*************************************
 //**** new comment form ********** */
-app.get("/campgrounds/:id/comments/new", function (req, res) {
+app.get("/campgrounds/:id/comments/new", isLoggedIn, function (req, res) {
   Campground.findById(req.params.id, function (err, campground) {
     if (err) {
       console.log(err);
@@ -116,7 +116,7 @@ app.get("/campgrounds/:id/comments/new", function (req, res) {
 });
 
 /* ********* create new comment **************** */
-app.post("/campgrounds/:id/comments", function (req, res) {
+app.post("/campgrounds/:id/comments", isLoggedIn, function (req, res) {
   //lookup campground using id
   Campground.findById(req.params.id, function (err, campground) {
     if (err) {
@@ -175,6 +175,20 @@ app.post(
   }),
   function (req, res) {}
 );
+
+//logout
+app.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect("/campgrounds");
+});
+
+// middleware function
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+}
 
 app.listen(PORT, function () {
   console.log(`server listening at port: ${PORT}`);
