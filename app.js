@@ -7,7 +7,8 @@ const express = require("express"),
   seedDB = require("./seeds"),
   passport = require("passport"),
   LocalStrategy = require("passport-local"),
-  methodOverride = require("method-override");
+  methodOverride = require("method-override"),
+  flash = require("connect-flash");
 
 User = require("./models/user");
 
@@ -23,6 +24,7 @@ require("./config/database");
 app.use(express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 app.use(methodOverride("_method"));
+app.use(flash());
 
 //middleware
 // this is how to get rec.body working in express
@@ -48,6 +50,8 @@ passport.deserializeUser(User.deserializeUser());
 //so that templates will have the variable currentUser
 app.use(function (req, res, next) {
   res.locals.currentUser = req.user;
+  res.locals.error = req.flash("error")
+  res.locals.success = req.flash("success")
   next();
 });
 
