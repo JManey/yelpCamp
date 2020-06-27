@@ -4,18 +4,39 @@ const express = require("express"),
   PORT = 3000,
   Campground = require("./models/campground"),
   Comment = require("./models/comment"),
-  seedDB = require("./seeds");
+  seedDB = require("./seeds"),
+  passport = require("passport"),
+  LocalStrategy = require("passport-local");
+User = require("./models/user");
 
 // load the env vars
 require("dotenv").config();
 // connect to the MongoDB with mongoose
 require("./config/database");
-app.use(express.static(__dirname + "/public"))
+app.use(express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 
 //middleware
 // this is how to get rec.body working in express
 app.use(express.urlencoded({ extended: true })); //Parse URL-encoded bodies
+
+// =============
+// passport config
+app.use(
+  require("express-session")({
+    secret: "Ginger and Tracy are my Best Girls today",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+//============================
 
 //************************************* */
 //seed db
@@ -95,29 +116,50 @@ app.get("/campgrounds/:id/comments/new", function (req, res) {
 });
 
 /* ********* create new comment **************** */
-app.post("/campgrounds/:id/comments", function(req,res){
+app.post("/campgrounds/:id/comments", function (req, res) {
   //lookup campground using id
-  Campground.findById(req.params.id, function(err, campground){
-    if(err){
-      console.log(err)
-      res.redirect("/campgrounds")
+  Campground.findById(req.params.id, function (err, campground) {
+    if (err) {
+      console.log(err);
+      res.redirect("/campgrounds");
     } else {
       //create new comment
-      Comment.create(req.body.comment, function(err, comment){
-        if(err){
-          console.log(err)
+      Comment.create(req.body.comment, function (err, comment) {
+        if (err) {
+          console.log(err);
         } else {
           //connect comment to campgroud
           campground.comments.push(comment);
           campground.save();
           res.redirect("/campgrounds/" + campground._id);
         }
-      })
+      });
     }
-  })
+  });
   //redirect
-})
- 
+});
+
+//====Auth Routes ======//
+
+// show register form
+app.get("/register", function (req, res) {
+  res.render("register");
+});
+
+//handle sign up logic
+app.post("/register", function (req, res) {
+  let newUser = new User({ username: req.body.username });
+  User.register(newUser, req.body.password, function (err, user) {
+    if (err) {
+      console.log(err);
+      return res.render("register");
+    }
+    passport.authenticate("local")(req, res, function () {
+      res.redirect("/campgrounds");
+    });
+  });
+});
+
 app.listen(PORT, function () {
   console.log(`server listening at port: ${PORT}`);
 });
