@@ -38,7 +38,7 @@ router.post("/", isLoggedIn, function (req, res) {
           //connect comment to campgroud
           campground.comments.push(comment);
           campground.save();
-          console.log(comment)
+          console.log("in create new comment route", comment)
           res.redirect("/campgrounds/" + campground._id);
         }
       });
