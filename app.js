@@ -49,7 +49,7 @@ app.use(function (req, res, next) {
 });
 
 //seed db
-seedDB();
+// seedDB();
 
 //============================
 //       ROUTES
