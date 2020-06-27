@@ -90,7 +90,16 @@ router.put("/:id", function (req, res) {
   });
 });
 
-//delete route
+//delete DESTROY route
+router.delete("/:id", function (req, res) {
+  Campground.findByIdAndRemove(req.params.id, function (err) {
+    if (err) {
+      res.redirect("/campgrounds");
+    } else {
+      res.redirect("/campgrounds");
+    }
+  });
+});
 
 // middleware function
 function isLoggedIn(req, res, next) {
