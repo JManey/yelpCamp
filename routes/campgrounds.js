@@ -1,6 +1,7 @@
 const express = require("express");
-const router = express.Router({ mergeParams: true });
+const router = express.Router(); //{ mergeParams: true }
 const Campground = require("../models/campground");
+const campground = require("../models/campground");
 
 // index route
 router.get("/", function (req, res) {
@@ -37,11 +38,13 @@ router.post("/", isLoggedIn, function (req, res) {
     name: name,
     image: image,
     description: description,
+    author: author,
   };
   Campground.create(newCampground, function (err, campground) {
     if (err) {
       console.log(err);
     } else {
+      console.log("newly created campground:", campground);
       res.redirect("/campgrounds");
     }
   });
@@ -54,13 +57,40 @@ router.get("/:id", function (req, res) {
     .populate("comments")
     .exec(function (err, campground) {
       if (err) {
-        console.log(err);
+        console.log("error from show route campground", err);
       } else {
         // console.log(campground);
         res.render("campgrounds/show", { campground: campground });
       }
     });
 });
+
+// edit form route
+router.get("/:id/edit", function (req, res) {
+  Campground.findById(req.params.id, function (err, campground) {
+    if (err) {
+      res.redirect("/campgrounds");
+    } else {
+      res.render("campgrounds/edit", { campground: campground });
+    }
+  });
+});
+
+// update route
+router.put("/:id", function (req, res) {
+  Campground.findByIdAndUpdate(req.params.id, req.body.campground, function (
+    err,
+    campground
+  ) {
+    if (err) {
+      res.redirect("/campgrounds");
+    } else {
+      res.redirect("/campgrounds/" + req.params.id);
+    }
+  });
+});
+
+//delete route
 
 // middleware function
 function isLoggedIn(req, res, next) {

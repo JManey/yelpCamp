@@ -6,7 +6,9 @@ const express = require("express"),
   Comment = require("./models/comment"),
   seedDB = require("./seeds"),
   passport = require("passport"),
-  LocalStrategy = require("passport-local");
+  LocalStrategy = require("passport-local"),
+  methodOverride = require("method-override");
+
 User = require("./models/user");
 
 //require routes
@@ -20,6 +22,7 @@ require("dotenv").config();
 require("./config/database");
 app.use(express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
+app.use(methodOverride("_method"));
 
 //middleware
 // this is how to get rec.body working in express
