@@ -18,12 +18,12 @@
                     <h4><a href=" "><%= campground.name %></a></h4>
                     <p><%= campground.description %></p>
                     <p>Added by: <%= campground.author.username %> </p>
-                    <p>
+                    <p id="delete-form">
                         <a class="btn btn-info" href="/campgrounds/<%= campground._id %>/edit">Edit Campground</a>
                     </p>
-                    <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="post">
-                        <button class="btn btn-danger">DELETE</button>
-                    </form>
+                        <form id="delete-form" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="post">
+                            <button class="btn btn-danger">DELETE</button>
+                        </form>
                 </div>
             </div>
             <div class="well">

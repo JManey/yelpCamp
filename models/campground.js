@@ -19,4 +19,16 @@ let campgroundSchema = new mongoose.Schema({
   ],
 });
 
+// ========= Pre Hook the model allows to delete its comments
+//========== when the campground is deleted
+const Comment = require("./comment");
+campgroundSchema.pre("remove", async function () {
+  console.log("pre function inside campground model");
+  await Comment.deleteMany({
+    _id: {
+      $in: this.comments,
+    },
+  });
+});
+
 module.exports = mongoose.model("Campground", campgroundSchema);

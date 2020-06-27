@@ -91,14 +91,15 @@ router.put("/:id", function (req, res) {
 });
 
 //delete DESTROY route
-router.delete("/:id", function (req, res) {
-  Campground.findByIdAndRemove(req.params.id, function (err) {
-    if (err) {
-      res.redirect("/campgrounds");
-    } else {
-      res.redirect("/campgrounds");
-    }
-  });
+router.delete("/:id", async function (req, res) {
+  try {
+    let campground = await Campground.findById(req.params.id);
+    await campground.remove();
+    res.redirect("/campgrounds");
+  }
+  catch (err) {
+    res.redirect("/campgrounds")
+  }
 });
 
 // middleware function
