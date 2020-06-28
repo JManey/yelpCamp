@@ -1,7 +1,6 @@
 const express = require("express"),
   mongoose = require("mongoose"),
   app = express(),
-  PORT = 3000,
   Campground = require("./models/campground"),
   Comment = require("./models/comment"),
   seedDB = require("./seeds"),
@@ -66,6 +65,6 @@ app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 
-app.listen(PORT, function () {
-  console.log(`server listening at port: ${PORT}`);
+app.listen((process.env.PORT || 3000), function () {
+  console.log(`server listening at port: ${process.env.PORT}`);
 });
