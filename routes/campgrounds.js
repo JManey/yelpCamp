@@ -5,7 +5,6 @@ const middleware = require("../middleware/index");
 
 // index route
 router.get("/", function (req, res) {
-  // console.log(req.user)
   // get campgrounds
   Campground.find({}, function (err, campgrounds) {
     if (err) {
@@ -59,7 +58,6 @@ router.get("/:id", function (req, res) {
       if (err) {
         console.log("error from show route campground", err);
       } else {
-        // console.log(campground);
         res.render("campgrounds/show", { campground: campground });
       }
     });

@@ -6,7 +6,6 @@ const middleware = require("../middleware/index");
 
 //**** new comment form ********** */
 router.get("/new", middleware.isLoggedIn, function (req, res) {
-  console.log(req.params.id);
   Campground.findById(req.params.id, function (err, campground) {
     if (err) {
       console.log(err);
@@ -21,14 +20,12 @@ router.post("/", middleware.isLoggedIn, function (req, res) {
   //lookup campground using id
   Campground.findById(req.params.id, function (err, campground) {
     if (err) {
-      console.log(err);
       res.redirect("/campgrounds");
     } else {
       //create new comment
       Comment.create(req.body.comment, function (err, comment) {
         if (err) {
-          res.flash("error", "Oops, something went wrong.")
-          console.log(err);
+          req.flash("error", "Oops, something went wrong.")
         } else {
           //add username and id to comment
           comment.author.id = req.user._id;
@@ -40,7 +37,7 @@ router.post("/", middleware.isLoggedIn, function (req, res) {
           campground.comments.push(comment);
           campground.save();
           console.log("in create new comment route", comment);
-          res.flash("success", "Thanks for leaving a comment!")
+          req.flash("success", "Thanks for leaving a comment!")
           res.redirect("/campgrounds/" + campground._id);
         }
       });
