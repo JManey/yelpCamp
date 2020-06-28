@@ -4,18 +4,17 @@ const Campground = require("../models/campground");
 const middleware = require("../middleware/index");
 
 // index route
-router.get("/", function (req, res) {
+router.get("/", async (req, res, next) => {
   // get campgrounds
-  Campground.find({}, function (err, campgrounds) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("campgrounds/index", {
-        campgrounds: campgrounds,
-        currentUser: req.user,
-      });
-    }
-  });
+  try {
+    const campgrounds = await Campground.find({});
+    res.render("campgrounds/index", {
+      campgrounds: campgrounds,
+      currentUser: req.user,
+    });
+  } catch (error) {
+    return next(error);
+  }
 });
 
 //new form route
@@ -24,67 +23,66 @@ router.get("/new", middleware.isLoggedIn, function (req, res) {
 });
 
 //route create new campground
-router.post("/", middleware.isLoggedIn, function (req, res) {
+router.post("/", middleware.isLoggedIn, async function (req, res) {
   //get data from from and push to array
-  let name = req.body.name;
-  let image = req.body.image;
-  let description = req.body.description;
   let author = {
     id: req.user._id,
     username: req.user.username,
   };
   let newCampground = {
-    name: name,
-    image: image,
-    description: description,
+    name: req.body.campground.name,
+    image: req.body.campground.image,
+    description: req.body.campground.description,
+    price: req.body.campground.price,
     author: author,
   };
-  Campground.create(newCampground, function (err, campground) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("newly created campground:", campground);
-      res.redirect("/campgrounds");
-    }
-  });
+  try {
+    await Campground.create(newCampground);
+    res.redirect("/campgrounds");
+  } catch (error) {
+    console.log("newly created campground:", campground);
+    next(error);
+  }
 });
 
 // show route for campground
-router.get("/:id", function (req, res) {
+router.get("/:id", async (req, res, next) => {
   //get campground
-  Campground.findById(req.params.id)
-    .populate("comments")
-    .exec(function (err, campground) {
-      if (err) {
-        console.log("error from show route campground", err);
-      } else {
+  try {
+    const campground = await Campground.findById(req.params.id)
+      .populate("comments")
+      .exec()
+      .then((campground) => {
         res.render("campgrounds/show", { campground: campground });
-      }
-    });
+      });
+  } catch (error) {
+    next(error);
+  }
 });
 
 // edit form route
-router.get("/:id/edit", middleware.checkCampgroundOwnership, function (
-  req,
-  res
-) {
-  Campground.findById(req.params.id, function (err, campground) {
-    res.render("campgrounds/edit", { campground: campground });
-  });
-});
+router.get(
+  "/:id/edit",
+  middleware.checkCampgroundOwnership,
+  async (req, res, next) => {
+    try {
+      const campground = await Campground.findById(req.params.id); //, function (err, campground) {
+      res.render("campgrounds/edit", { campground: campground });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 // update route
-router.put("/:id", middleware.checkCampgroundOwnership, function (req, res) {
-  Campground.findByIdAndUpdate(req.params.id, req.body.campground, function (
-    err,
-    campground
-  ) {
-    if (err) {
-      res.redirect("/campgrounds");
-    } else {
-      res.redirect("/campgrounds/" + req.params.id);
-    }
-  });
+router.put("/:id", middleware.checkCampgroundOwnership, async (req, res) => {
+  try {
+    await Campground.findByIdAndUpdate(req.params.id, req.body.campground);
+    res.redirect("/campgrounds/" + req.params.id);
+  } catch (error) {
+    // res.redirect("/campgrounds");
+    next();
+  }
 });
 
 //delete DESTROY route
